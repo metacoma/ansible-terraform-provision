@@ -1,6 +1,8 @@
 ---
 - hosts: localhost
   gather_facts: false
+  vars:
+    work_dir: /opt/terraform
 
   pre_tasks:
     - include: tasks/env.yml action=load
@@ -12,7 +14,23 @@
       tags:
         - env
 
-
   tasks:
     - debug:
         msg: "hello world! {{ env_id }}"
+
+    - name: create terraform directory
+      file:
+        dest: "{{ work_dir }}"
+        state: directory
+
+
+    - name: template terraform manifest
+      template:
+        src: templates/terraform.tf.j2
+        dest: "{{ work_dir }}/terraform.tf"
+
+
+    - name: terraform init
+      command: terraform init
+      args:
+        chdir: "{{ work_dir }}"

@@ -1,0 +1,37 @@
+provider "aws" {
+  access_key = "{{ apocng_aws.access_key }}"
+  secret_key = "{{ apocng_aws.secret_key }}"
+  region     = "{{ apocng_aws.region }}"
+}
+
+resource "aws_key_pair" "{{ apocng_uuid }}-admin-key" {
+  key_name   = "{{ apocng_uuid }}-admin-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDqFpmnn+ts5BVz9QXansgOQnNY9SFYxyiKuQJONridAFM+j7mKDOl1jL9QA44+MadochyZgvwwlEk7jufPpLea2gV+AY7CuazIPwb2SM+NDnoMJ4iKt3a56V5ATKSOUluQ27RIKfDMdRv362GOOZJO6He59Pitppt3gAZTM5+FFc1TV5Nu4hQWyMdf0F+jBHaFYmRlFgHqSTHTY5mTCphgB0bkkstvChHpJKT6LkWNDzt58ZMgdZE4JTRUKvfiNfIGMRRb0OEasR4lu/xEME+9OjKf6+7gNF4t/oM4WOi5tBGxpwV/wgEt1pJMDkqkaoir6iHY+RiD60qKd0LW0dXB ubuntu@ip-172-31-19-10"
+}
+
+resource "aws_security_group" "{{ apocng_uuid }}-allow_all" {
+  name        = "{{ apocng_uuid }}-allow_all"
+  description = "Allow all inbound traffic"
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_instance" "{{ apocng_uuid }}-minikube" {
+  ami           = "ami-ecc63a94"
+  instance_type = "t2.large"
+  key_name = "{{ apocng_uuid }}-admin-key"
+  security_groups = ["{{ apocng_uuid }}-allow_all"]
+
+}
