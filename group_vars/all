@@ -1,2 +1,2 @@
 api:
-  host: https://apocng-k8spray.k8spray.svc.cluster.local:443
+  host: https://apocng-k8spray:443
