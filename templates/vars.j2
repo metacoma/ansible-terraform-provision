@@ -1,0 +1,7 @@
+{% set apocng = {} %}
+{% for key in vars %}
+{% if key | match('^apocng_') %}
+{% set _unused=apocng.__setitem__(key, vars[key]) %}
+{% endif %}
+{% endfor %}
+{{ apocng | to_json }}

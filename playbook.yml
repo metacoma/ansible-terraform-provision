@@ -1,6 +1,18 @@
 ---
 - hosts: localhost
   gather_facts: false
+
+  pre_tasks:
+    - include: tasks/env.yml action=load
+      tags:
+        - env
+
+  post_tasks:
+    - include: tasks/env.yml action=save
+      tags:
+        - env
+
+
   tasks:
     - debug:
         msg: "hello world! {{ env_id }}"
