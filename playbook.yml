@@ -34,3 +34,14 @@
       command: terraform init
       args:
         chdir: "{{ work_dir }}"
+
+    - name: terraform plan
+      command: terraform plan
+      args:
+        chdir: "{{ work_dir }}"
+      when: apocng_debug is defined
+
+    - name: terraform apply
+      command: terraform apply
+      args:
+        chdir: "{{ work_dir }}"
