@@ -28,6 +28,31 @@ resource "aws_security_group" "{{ apocng_uuid }}-allow_all" {
   }
 }
 
+resource "aws_iam_role" "{{ apocng_uuid }}-role" {
+  name = "{{ apocng_uuid }}-role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_instance_profile" "{{ apocng_uuid }}-instance-profile" {
+  name  = "{{ apocng_uuid }}-instance-profile"
+  role = "${aws_iam_role.{{ apocng_uuid }}-role.name}"
+}
+
 resource "aws_instance" "{{ apocng_uuid }}-minikube" {
   ami           = "ami-ecc63a94"
   instance_type = "t2.large"
