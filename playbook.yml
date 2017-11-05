@@ -15,9 +15,6 @@
         - env
 
   tasks:
-    - debug:
-        msg: "hello world! {{ env_id }}"
-
     - name: create terraform directory
       file:
         dest: "{{ work_dir }}"
