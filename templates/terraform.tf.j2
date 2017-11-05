@@ -36,12 +36,12 @@ resource "aws_iam_role" "{{ apocng_uuid }}-role" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": "sts:AssumeRole",
+      "Sid": "",
+      "Effect": "Allow",
       "Principal": {
         "Service": "ec2.amazonaws.com"
       },
-      "Effect": "Allow",
-      "Sid": ""
+      "Action": "sts:AssumeRole"
     }
   ]
 }
@@ -53,10 +53,39 @@ resource "aws_iam_instance_profile" "{{ apocng_uuid }}-instance-profile" {
   role = "${aws_iam_role.{{ apocng_uuid }}-role.name}"
 }
 
-resource "aws_instance" "{{ apocng_uuid }}-minikube" {
+resource "aws_iam_policy" "{{ apocng_uuid }}-policy" {
+  name        = "{{ apocng_uuid }}-policy"
+  path        = "/"
+  description = "{{ apocng_uuid }} policy"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "NotAction": "iam:*",
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+}
+
+# XXX
+# WARNING: The aws_iam_policy_attachment resource creates exclusive attachments of IAM policies. Across the entire AWS account, all of the users/roles/groups to which a single policy is attached must be declared by a single aws_iam_policy_attachment resource. This means that even any users/roles/groups that have the attached policy via some mechanism other than Terraform will have that attached policy revoked by Terraform
+resource "aws_iam_policy_attachment" "{{ apocng_uuid }}-attachment" {
+  name       = "{{ apocng_uuid }}-attachment"
+  roles      = ["${aws_iam_role.{{ apocng_uuid }}-role.name}"]
+  policy_arn = "${aws_iam_policy.{{ apocng_uuid }}-policy.arn}"
+}
+
+{% for i in range(apocng_k8s_nodes) %}
+resource "aws_instance" "{{ apocng_uuid }}-minikube-{{ i }}" {
   ami           = "ami-ecc63a94"
   instance_type = "t2.large"
   key_name = "{{ apocng_uuid }}-admin-key"
   security_groups = ["{{ apocng_uuid }}-allow_all"]
-
+  iam_instance_profile = "{{ apocng_uuid }}-instance-profile"
 }
+{% endfor %}
