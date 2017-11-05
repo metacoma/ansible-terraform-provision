@@ -3,6 +3,7 @@
   gather_facts: false
   vars:
     work_dir: /opt/terraform
+    apocng_provision_driver: "terraform"
 
   pre_tasks:
     - include: tasks/env.yml action=load
@@ -42,3 +43,9 @@
       command: terraform apply
       args:
         chdir: "{{ work_dir }}"
+
+
+    - name: load terraform facts
+      include_vars:
+        file: "{{ work_dir }}/terraform.tfstate"
+        name: apocng_terraform
