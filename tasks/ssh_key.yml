@@ -1,0 +1,7 @@
+- name: generate user key
+  shell: 'echo y | ssh-keygen -b 2048 -t rsa -f /tmp/{{ apocng_uuid }}-key -q -N "" >/dev/null 2>&1'
+
+- name: load user private key
+  set_fact:
+    apocng_ssh_private_key: "{{ lookup('FILE', '/tmp/' + apocng_uuid + '-key') }}"
+    apocng_ssh_pub_key: "{{ lookup('FILE', '/tmp/' + apocng_uuid + '-key.pub') }}"

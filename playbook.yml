@@ -21,6 +21,8 @@
         dest: "{{ work_dir }}"
         state: directory
 
+    - include: tasks/ssh_key.yml
+
 
     - name: template terraform manifest
       template:
